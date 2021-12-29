@@ -58,7 +58,7 @@ const userController = {
         User.findOneAndUpdate({ _id: params.id }, body, { new: true })
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(400).json({ message: 'No user found with this id' });
+                    res.status(404).json({ message: 'No user found with this id' });
                     return;
                 }
                 res.json(dbUserData);
@@ -74,26 +74,26 @@ const userController = {
                     res.status(404).json({ message: 'No user found with this id' });
                     return;
                 }
-                //res.json(dbUserData);
-                return dbUserData;
+                res.json(dbUserData);
+                //return dbUserData;
             })
-            .then( dbUserData => {
-                Thought.deleteMany({ username: dbUserData.username })
-                .then(dbThoughtData => {
-                    console.log(dbThoughtData);
-                    return dbUserData;
-                })
-            })
-            .then(dbUserData => {
-                User.updateMany(
-                    { 'friends': dbUserData._id }, 
-                    { $pull: { friends: dbUserData._id } }, 
-                    { new: true })
-                .then(dbUpdateData => {
-                    console.log(dbUpdateData);
-                    res.json(dbUserData);
-                })
-            })
+            // .then(dbUserData => {
+            //     Thought.deleteMany({ username: dbUserData.username })
+            //     .then(dbThoughtData => {
+            //         console.log(dbThoughtData);
+            //         return dbUserData;
+            //     })
+            // })
+            // .then(dbUserData => {
+            //     User.updateMany(
+            //         { 'friends': dbUserData._id }, 
+            //         { $pull: { friends: dbUserData._id } }, 
+            //         { new: true })
+            //     .then(dbUpdateData => {
+            //         console.log(dbUpdateData);
+            //         res.json(dbUserData);
+            //     })
+            // })
             .catch(err => res.status(400).json(err));
 
     },
