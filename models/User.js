@@ -11,10 +11,7 @@ const UserSchema = new Schema({
             type: String,
             unique: true,
             required: true,
-            validate: {
-                validator: () => Promise.resolve(false),
-                message: 'Not a valid email'
-            }
+            match: [/.+@.+\..+/]
         },
         thoughts: [
             {
