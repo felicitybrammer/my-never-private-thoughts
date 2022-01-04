@@ -74,9 +74,17 @@ const userController = {
                     res.status(404).json({ message: 'No user found with this id' });
                     return;
                 }
-                res.json(dbUserData);
-                //return dbUserData;
+
+                const thoughtIds = dbUserData.thoughts
+                Thought.deleteMany({_id: {$in: thoughtIds}})
+                .then(console.log)
+                res.status(200).json(userData)
             })
+            .catch(err => res.status(500).json(err))
+
+                //res.json(dbUserData);
+                //return dbUserData;
+            
             // .then(dbUserData => {
             //     Thought.deleteMany({ username: dbUserData.username })
             //     .then(dbThoughtData => {
@@ -94,15 +102,16 @@ const userController = {
             //         res.json(dbUserData);
             //     })
             // })
-            .catch(err => res.status(400).json(err));
+            // .catch(err => res.status(400).json(err));
 
     },
 
     
-    addFriend({ params }, res) {  
-        User.findOneAndUpdate(
-            { _id: params.userId },
-            { $push: { friends: params.friendId } }, 
+    addFriend({ params: { userId, friendId } }, res) {  
+        User.findByIdAndUpdate(
+            { $addToSet: { friends: friendId } },
+            // { _id: params.userId },
+            // { $push: { friends: params.friendId } }, 
             { new: true }
         )
             .then(dbUserData => {
@@ -115,10 +124,10 @@ const userController = {
             .catch(err => res.json(err));
     },
     
-    removeFriend({ params }, res) {
-        User.findOneAndDelete(
-            { _id: params.friendId },
-            { $pull: { friends: { friendId: params.friendId } } },
+    removeFriend({ params: { userId, friendId } }, res) {
+        User.findOneAndUpdate(
+            userId ,
+            { $pull: { friends: friendId } },
             { new: true }
         )
             .then(dbUserData => res.json(dbUserData))
